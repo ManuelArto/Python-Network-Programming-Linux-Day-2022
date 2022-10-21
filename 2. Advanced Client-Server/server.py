@@ -13,7 +13,7 @@ def handle_client(client, addr):
 	while msg != DISCONNECT_MESSAGE:
 		# READ message from client
 		msg = client.recv(1024).decode()
-		print(f"[NEW MESSAGE from {addr[0]}] {msg}")
+		print(f"[NEW MESSAGE from {addr[0]}]: {msg}")
 
 		# WRITE message to client
 		client.send(f'Message received from {addr[0]}'.encode())

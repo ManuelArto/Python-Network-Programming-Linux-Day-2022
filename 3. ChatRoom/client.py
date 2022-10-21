@@ -1,14 +1,16 @@
-from help import handle_request
+from help import handle_request_no_args
 import socket
 import json
 
 # COSTANTI
 IP = ''
-PORT = 8000
+PORT = 8002
 ADDR = (IP, PORT)
 DISCONNECT_MESSAGE = "!DISCONNECT"
 # GLOBAL
 global active_users
+global client
+global username
 
 def send(self, receiver, msg):
 	data = {"sender": username, "receiver": receiver, "msg": msg}
@@ -59,9 +61,9 @@ try:
 	client.connect(ADDR)
 	print(f"[CONNECTION] Starting connection to {ADDR}")
 	
-	handle_request(target=listen_server)
+	handle_request_no_args(target=listen_server)
 	listen_client()
 
 except Exception as e:
-	# print(e)
+	print(e)
 	client.close()

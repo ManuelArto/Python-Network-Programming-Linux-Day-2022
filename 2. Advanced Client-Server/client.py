@@ -16,11 +16,13 @@ msg = ""
 while msg != DISCONNECT_MESSAGE:
     # WRITE message to server
     msg = input("Send: ")
-    client.send(msg.encode())
+    # controllo che non sia vuoto per evitare casini 
+    if(msg != ""):
+        client.send(msg.strip().encode())
 
-    # READ message from server
-    receive = client.recv(1024)
-    print(receive.decode())
+        # READ message from server
+        receive = client.recv(1024)
+        print(receive.decode())
 
 # CHIUDI la connessione
 client.close()

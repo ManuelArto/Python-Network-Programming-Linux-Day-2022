@@ -12,5 +12,9 @@ def handle_request(target, address):
 	thread = threading.Thread(target=handle_wrapper, args=(target, address))
 	thread.start()
 
+def handle_request_no_args(target):
+	thread = threading.Thread(target=target)
+	thread.start()
+
 def active_connections():
 	return threading.activeCount() - 1
