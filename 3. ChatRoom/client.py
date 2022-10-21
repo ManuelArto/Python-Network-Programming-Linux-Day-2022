@@ -1,55 +1,56 @@
-from help import handle_request_no_args
+from help import *
 import socket
-import json
 
 # COSTANTI
 IP = ''
-PORT = 8002
+PORT = 8001
 ADDR = (IP, PORT)
 DISCONNECT_MESSAGE = "!DISCONNECT"
-# GLOBAL
-global active_users
-global client
-global username
 
-def send(self, receiver, msg):
+
+def send(receiver, msg):
 	data = {"sender": username, "receiver": receiver, "msg": msg}
-	client.send(json.dumps(data).encode())
+	client.send(encode_data(data))
 
 def listen_client():
 	while True:
 		msg = input("Message: ")
 
 		if msg == DISCONNECT_MESSAGE:
-			send("", DISCONNECT_MESSAGE.encode())
+			send("", msg)
+			client.close()
 			break
 
 		print(f"\n[ACTIVE USERS] {active_users + ['broadcast']}")
 		receiver = input("Receiver: ")
 		
-		if receiver not in list(active_users.keys()) + ["broadcast"]:
+		if receiver not in active_users + ["broadcast"]:
 			print("not a valid username")
 			continue
 
-		send(receiver, msg.encode())
+		send(receiver, msg)
 
 def update_users(users):
-	del users[username]
+	global active_users
+	users.remove(username)
 	active_users = users
 
 def send_username():
 	data = {"username": username}
-	client.send(json.dumps(data).encode())
+	client.send(encode_data(data))
 
 def listen_server():
 	send_username()
 	while True:
-		data = client.recv(1024).decode()
-		data = json.loads(data)
-		if "users" in data.keys():
+		data = client.recv(1024)
+		data = decode_data(data)
+		if not data:
+			break
+		if "users" in data:
 			update_users(data["users"])
 		else:
-			print(f"\n[NEW MESSAGE] {data['sender']}: {msg} \nMessage: ", end="")
+			print(f"\n[NEW MESSAGE] {data['sender']}: {data['msg']}")
+			print("Message: ")
 
 
 # [user1, user2]
@@ -61,9 +62,10 @@ try:
 	client.connect(ADDR)
 	print(f"[CONNECTION] Starting connection to {ADDR}")
 	
-	handle_request_no_args(target=listen_server)
+	handle_request(target=listen_server)
 	listen_client()
 
 except Exception as e:
 	print(e)
-	client.close()
+# finally:
+# 	client.close()
